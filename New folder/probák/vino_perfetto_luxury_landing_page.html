@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="hu" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vino Perfetto — Prémium Prosecco Nagykereskedés</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ivory: {
+                            DEFAULT: '#F8F4EC',
+                            dark: '#EFE6D8'
+                        },
+                        charcoal: {
+                            DEFAULT: '#25231F',
+                            light: '#3A3731'
+                        },
+                        gold: {
+                            DEFAULT: '#B9975B',
+                            soft: '#DCC79C',
+                            light: '#E9DDBF'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"DM Sans"', 'sans-serif'],
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                    },
+                    boxShadow: {
+                        'luxury': '0 20px 40px -15px rgba(37, 35, 31, 0.1)',
+                        'luxury-hover': '0 30px 60px -20px rgba(185, 151, 91, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Ambient luxury background grain */
+        body {
+            background-color: #F8F4EC;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 50;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mix-blend-mode: multiply;
+        }
+        
+        /* Subtle glow effects */
+        .ambient-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Hide scrollbar when modal is open */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* Animated underline for nav */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 50%;
+            background-color: #B9975B;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Card hover transitions */
+        .luxury-card {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+        .luxury-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px -20px rgba(185, 151, 91, 0.15);
+            border-color: rgba(185, 151, 91, 0.4);
+        }
+    </style>
+</head>
+<body class="font-sans text-charcoal antialiased overflow-x-hidden selection:bg-gold selection:text-white">
+
+    <div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
+        <div class="ambient-glow bg-gold-light w-[50vw] h-[50vw] -top-[10%] -left-[10%]"></div>
+        <div class="ambient-glow bg-gold-soft w-[40vw] h-[40vw] bottom-[10%] -right-[5%] opacity-20"></div>
+    </div>
+
+    <div id="age-modal" class="fixed inset-0 z-[100] bg-charcoal/80 backdrop-blur-md flex items-center justify-center p-4 transition-opacity duration-500">
+        <div class="bg-ivory relative max-w-lg w-full rounded-3xl p-10 md:p-14 text-center shadow-2xl border border-gold/30 overflow-hidden">
+            <!-- Decorative SVG background -->
+            <svg class="absolute -top-10 -right-10 w-64 h-64 text-gold opacity-10 pointer-events-none" viewBox="0 0 400 300" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M 380,20 C 250,50 300,200 150,150 C 50,110 80,250 20,280" />
+                <circle cx="210" cy="110" r="15" />
+            </svg>
+            
+            <div class="relative z-10">
+                <div class="font-serif text-3xl md:text-4xl text-charcoal mb-4 tracking-tight">Elmúltál 18 éves?</div>
+                <p class="text-charcoal-light font-sans text-base mb-10 leading-relaxed">
+                    Az oldal tartalmának megtekintéséhez kérjük, igazold, hogy elmúltál 18 éves. Kérjük, fogyaszd felelősséggel termékeinket!
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button id="btn-age-yes" class="px-8 py-4 bg-charcoal text-gold-soft rounded-full font-medium tracking-widest uppercase text-xs hover:bg-gold hover:text-white transition-colors duration-300 w-full sm:w-auto">
+                        Igen, elmúltam
+                    </button>
+                    <button id="btn-age-no" class="px-8 py-4 bg-transparent border border-charcoal/20 text-charcoal rounded-full font-medium tracking-widest uppercase text-xs hover:border-gold hover:text-gold transition-colors duration-300 w-full sm:w-auto">
+                        Nem, még nem
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-charcoal text-gold-soft text-center py-2 text-[0.65rem] uppercase tracking-[0.2em] font-medium relative z-50">
+        Prémium Olasz Prosecco Importőr <span class="opacity-40 mx-3">|</span> Kizárólag B2B partnerek részére
+    </div>
+
+    <header class="sticky top-0 z-40 bg-ivory/90 backdrop-blur-lg border-b border-gold/20 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 py-5 flex items-center justify-between">
+            <a href="#" class="font-serif text-2xl md:text-3xl font-semibold text-charcoal flex items-center gap-2 group">
+                <span class="w-2 h-2 rounded-full bg-gold shadow-[0_0_8px_rgba(185,151,91,0.5)] group-hover:scale-150 transition-transform"></span>
+                Vino Perfetto
+            </a>
+            
+            <nav class="hidden md:flex items-center gap-8 text-xs font-medium uppercase tracking-widest text-charcoal-light">
+                <a href="#home" class="nav-link relative hover:text-gold transition-colors pb-1">Kezdőlap</a>
+                <a href="#method" class="nav-link relative hover:text-gold transition-colors pb-1">Készítés</a>
+                <a href="#b2b" class="nav-link relative hover:text-gold transition-colors pb-1">B2B</a>
+                <a href="#catalog" class="nav-link relative hover:text-gold transition-colors pb-1">Kínálat</a>
+            </nav>
+
+            <a href="#catalog" class="hidden md:inline-flex px-6 py-2.5 border border-gold/60 rounded-full text-xs font-medium uppercase tracking-widest hover:bg-gold hover:text-white hover:border-gold transition-all duration-300">
+                Katalógus
+            </a>
+            
+            <!-- Mobile menu button -->
+            <button class="md:hidden text-charcoal p-2 focus:outline-none" aria-label="Menu" id="mobile-menu-btn">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="hidden md:hidden bg-ivory border-b border-gold/20 absolute w-full left-0 top-full">
+            <div class="flex flex-col px-6 py-4 gap-4 text-sm font-medium uppercase tracking-widest text-center">
+                <a href="#home" class="py-2 hover:text-gold">Kezdőlap</a>
+                <a href="#method" class="py-2 hover:text-gold">Készítés</a>
+                <a href="#b2b" class="py-2 hover:text-gold">B2B</a>
+                <a href="#catalog" class="py-2 hover:text-gold">Kínálat</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="relative pt-24 pb-32 md:pt-32 md:pb-40 px-6 overflow-hidden flex items-center min-h-[85vh]">
+            <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+                
+                <!-- Hero Copy -->
+                <div class="max-w-xl">
+                    <div class="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-gold mb-6">
+                        <span class="text-sm">✦</span> Vino Perfetto
+                    </div>
+                    <h1 class="font-serif text-5xl md:text-6xl lg:text-7xl leading-[0.95] text-charcoal tracking-tight mb-8">
+                        Gyöngyöző öröm,<br>
+                        <em class="text-gold font-normal italic">olasz szenvedély.</em>
+                    </h1>
+                    <div class="flex items-center gap-4 text-gold/60 mb-8 max-w-sm">
+                        <div class="h-px bg-gold/40 flex-1"></div>
+                        <span class="text-xs">✦</span>
+                        <div class="h-px bg-gold/40 flex-1"></div>
+                    </div>
+                    <p class="text-lg text-charcoal-light leading-relaxed mb-10">
+                        Fedezze fel a Prémium Prosecco élmény kifinomult világát! Kizárólagos hazai forgalmazói vagyunk Olaszország legkiválóbb, válogatott dombvidéki pincészeteinek.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#catalog" class="px-8 py-4 bg-charcoal text-gold-soft rounded-full font-medium tracking-widest uppercase text-xs hover:bg-gold hover:text-white transition-all shadow-luxury hover:-translate-y-1">
+                            Termékek megtekintése
+                        </a>
+                        <a href="#b2b" class="px-8 py-4 bg-transparent border border-charcoal/20 text-charcoal rounded-full font-medium tracking-widest uppercase text-xs hover:border-gold hover:text-gold transition-all hover:-translate-y-1">
+                            B2B Ajánlatunk
+                        </a>
+                    </div>
+                </div>
+
+                <div class="relative w-full aspect-[4/3] lg:aspect-square flex items-center justify-center">
+                    <!-- Abstract luxury frame representing a bottle/estate -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/60 to-gold-soft/20 backdrop-blur-xl rounded-[2.5rem] border border-gold/30 shadow-luxury overflow-hidden p-6 transform lg:rotate-2">
+                        <div class="absolute inset-4 border border-gold/20 rounded-[1.5rem] pointer-events-none"></div>
+                        <!-- Placeholder for Hero Image - using a refined color block scheme -->
+                        <img src="https://placehold.co/800x1000/EFE6D8/B9975B?text=Prémium+Prosecco" alt="Prémium Prosecco" class="w-full h-full object-cover rounded-2xl shadow-inner mix-blend-multiply opacity-90">
+                    </div>
+                    <!-- Rotating Badge -->
+                    <div class="absolute -bottom-8 -left-8 md:-bottom-12 md:-left-12 w-32 h-32 md:w-40 md:h-40 bg-charcoal text-gold-soft rounded-full flex items-center justify-center shadow-2xl animate-[spin_20s_linear_infinite] border border-gold/20">
+                        <svg viewBox="0 0 100 100" class="w-full h-full p-2">
+                            <path id="curve" d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" fill="transparent" />
+                            <text class="text-[10px] uppercase tracking-widest font-medium" fill="currentColor">
+                                <textPath href="#curve" startOffset="0%">• DOCG VALDOBBIADENE • PREMIUM PROSECCO</textPath>
+                            </text>
+                        </svg>
+                        <div class="absolute text-2xl font-serif">VP</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="method" class="py-24 md:py-32 px-6 relative z-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="max-w-2xl mb-16">
+                    <div class="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-gold mb-4">
+                        <span class="text-sm">✦</span> Történetünk
+                    </div>
+                    <h2 class="font-serif text-4xl md:text-5xl text-charcoal leading-tight mb-6">Az olasz történet a termőhelytől a pohárig</h2>
+                    <div class="w-12 h-px bg-gold mb-6"></div>
+                    <p class="text-charcoal-light leading-relaxed">
+                        A Prosecco története nem a palacknál kezdődik. A Veneto dombjain, a glera szőlőben és azokban a pincékben kezdődik, ahol a frissesség, a finom buborék és az olasz életérzés találkozik.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Step 1 -->
+                    <div class="luxury-card bg-white/50 backdrop-blur-md border border-gold/10 p-10 rounded-2xl relative overflow-hidden group">
+                        <div class="font-serif italic text-gold text-2xl mb-6">01</div>
+                        <h3 class="font-serif text-2xl text-charcoal mb-4">Szüret</h3>
+                        <p class="text-sm text-charcoal-light leading-relaxed">A glera szőlőt a Veneto dombjairól kézzel vagy géppel szüretelik, jellemzően szeptember elején.</p>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="luxury-card bg-white/50 backdrop-blur-md border border-gold/10 p-10 rounded-2xl relative overflow-hidden group">
+                        <div class="font-serif italic text-gold text-2xl mb-6">02</div>
+                        <h3 class="font-serif text-2xl text-charcoal mb-4">Alapbor</h3>
+                        <p class="text-sm text-charcoal-light leading-relaxed">A must első erjesztése hagyományos módon történik, amely egy nyugodt, tiszta fehérbort eredményez.</p>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="luxury-card bg-white/50 backdrop-blur-md border border-gold/10 p-10 rounded-2xl relative overflow-hidden group">
+                        <div class="font-serif italic text-gold text-2xl mb-6">03</div>
+                        <h3 class="font-serif text-2xl text-charcoal mb-4">Erjesztés</h3>
+                        <p class="text-sm text-charcoal-light leading-relaxed">Zárt, nyomásálló acéltartályban hozzáadott élesztővel indul meg a második erjesztés (Charmat-módszer).</p>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="luxury-card bg-white/50 backdrop-blur-md border border-gold/10 p-10 rounded-2xl relative overflow-hidden group">
+                        <div class="font-serif italic text-gold text-2xl mb-6">04</div>
+                        <h3 class="font-serif text-2xl text-charcoal mb-4">Palackozás</h3>
+                        <p class="text-sm text-charcoal-light leading-relaxed">A bor nyomás alatt kerül palackba, hogy a finom, tartós gyöngyözés tökéletesen megmaradjon.</p>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="b2b" class="py-24 md:py-32 bg-charcoal text-white relative z-10 overflow-hidden">
+            <!-- Decorative background elements -->
+            <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-gold/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+            
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+                <div class="flex flex-col md:flex-row gap-16 items-center">
+                    <div class="w-full md:w-5/12">
+                        <div class="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-gold-soft mb-4">
+                            <span class="text-sm">✦</span> Partnerprogram
+                        </div>
+                        <h2 class="font-serif text-4xl md:text-5xl leading-tight mb-8">Miért érdemes velünk dolgozni?</h2>
+                        <p class="text-ivory-dark/70 leading-relaxed mb-10">
+                            Szolgáltatásunk a palackon túl is tart. Büszkék vagyunk arra, hogy megbízható partnerként támogatjuk a hazai gasztronómiát és kereskedelmet.
+                        </p>
+                        <a href="#kapcsolat" class="inline-flex px-8 py-4 bg-gold text-white rounded-full font-medium tracking-widest uppercase text-xs hover:bg-gold-soft hover:text-charcoal transition-colors shadow-lg">
+                            Vegye fel a kapcsolatot
+                        </a>
+                    </div>
+                    
+                    <div class="w-full md:w-7/12 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="p-8 border border-white/10 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+                            <div class="w-12 h-12 rounded-full border border-gold-soft/50 flex items-center justify-center mb-6">
+                                <svg class="w-5 h-5 text-gold-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                            </div>
+                            <h3 class="font-serif text-2xl mb-3 text-white">Exkluzivitás</h3>
+                            <p class="text-sm text-ivory-dark/60 leading-relaxed">Magyarországon máshol nem forgalmazott, gondosan válogatott prémium portfólió.</p>
+                        </div>
+                        
+                        <div class="p-8 border border-white/10 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+                            <div class="w-12 h-12 rounded-full border border-gold-soft/50 flex items-center justify-center mb-6">
+                                <svg class="w-5 h-5 text-gold-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <h3 class="font-serif text-2xl mb-3 text-white">Kiszállítás</h3>
+                            <p class="text-sm text-ivory-dark/60 leading-relaxed">Budapesten és környékén megbízható, gyors és ügyfélközpontú disztribúció.</p>
+                        </div>
+
+                        <div class="p-8 border border-white/10 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors sm:col-span-2">
+                            <div class="w-12 h-12 rounded-full border border-gold-soft/50 flex items-center justify-center mb-6">
+                                <svg class="w-5 h-5 text-gold-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            </div>
+                            <h3 class="font-serif text-2xl mb-3 text-white">Rugalmasság</h3>
+                            <p class="text-sm text-ivory-dark/60 leading-relaxed">Partnereink igényeihez igazodunk. Minimális rendelési mennyiségünk csupán <strong>1 karton</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="catalog" class="py-24 md:py-32 px-6 relative z-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <div class="flex items-center justify-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-gold mb-4">
+                        <span class="text-sm">✦</span> Kínálat
+                    </div>
+                    <h2 class="font-serif text-4xl md:text-5xl text-charcoal leading-tight mb-6">Válogatott tételek</h2>
+                    <p class="text-charcoal-light">Fedezze fel gondosan összeállított portfóliónkat a mindennapi eleganciától a legkiválóbb dűlőkig.</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12 bg-white/60 backdrop-blur-md p-4 rounded-2xl border border-gold/10">
+                    <div class="flex flex-wrap gap-2 justify-center" id="filter-category">
+                        <span class="text-xs uppercase tracking-widest text-gold font-medium flex items-center mr-2">Kategória:</span>
+                        <button class="filter-btn active px-4 py-2 rounded-full border border-charcoal/10 text-xs uppercase tracking-widest font-medium transition-colors bg-charcoal text-white" data-filter="all">Összes</button>
+                        <button class="filter-btn px-4 py-2 rounded-full border border-charcoal/10 text-xs uppercase tracking-widest font-medium transition-colors hover:border-gold hover:text-gold text-charcoal-light" data-filter="prosecco">Prosecco</button>
+                        <button class="filter-btn px-4 py-2 rounded-full border border-charcoal/10 text-xs uppercase tracking-widest font-medium transition-colors hover:border-gold hover:text-gold text-charcoal-light" data-filter="habzobor">Habzóbor</button>
+                        <button class="filter-btn px-4 py-2 rounded-full border border-charcoal/10 text-xs uppercase tracking-widest font-medium transition-colors hover:border-gold hover:text-gold text-charcoal-light" data-filter="bor">Csendes Bor</button>
+                    </div>
+                </div>
+
+                <!-- Product Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="product-grid">
+                    
+                    <!-- Product 1 -->
+                    <div class="product-item luxury-card bg-white rounded-2xl border border-gold/10 flex flex-col overflow-hidden" data-category="prosecco">
+                        <div class="aspect-[3/4] bg-ivory-dark relative p-6 flex items-center justify-center">
+                            <span class="absolute top-4 left-4 text-[0.6rem] uppercase tracking-widest font-bold px-3 py-1 border border-charcoal/20 rounded-full text-charcoal">Sztenderd</span>
+                            <!-- Placeholder image for bottle -->
+                            <img src="https://placehold.co/200x500/EFE6D8/25231F?text=Villa+Cornaro" alt="Villa Cornaro" class="h-full object-contain mix-blend-multiply drop-shadow-xl">
+                        </div>
+                        <div class="p-8 flex flex-col flex-1">
+                            <div class="text-xs text-gold uppercase tracking-widest mb-2">Villa Cornaro</div>
+                            <h3 class="font-serif text-2xl text-charcoal mb-2">Prosecco DOC Treviso Extra Dry</h3>
+                            <p class="text-sm text-charcoal-light mb-6 flex-1">Könnyed és elegáns, alma, őszibarack és finom virágok harmonikus jegyeivel.</p>
+                            <div class="flex items-center justify-between border-t border-gold/10 pt-4 mt-auto">
+                                <span class="font-serif text-xl font-medium text-gold">2 690 Ft</span>
+                                <span class="text-xs uppercase tracking-wider text-charcoal-light hover:text-gold cursor-pointer transition-colors">Részletek ›</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 2 -->
+                    <div class="product-item luxury-card bg-white rounded-2xl border border-gold/10 flex flex-col overflow-hidden" data-category="prosecco">
+                        <div class="aspect-[3/4] bg-[#E9D1D3] relative p-6 flex items-center justify-center">
+                            <span class="absolute top-4 left-4 text-[0.6rem] uppercase tracking-widest font-bold px-3 py-1 border border-charcoal/20 rounded-full text-charcoal">Sztenderd</span>
+                            <img src="https://placehold.co/200x500/E9D1D3/25231F?text=Rosa+Prosecco" alt="Rosa Prosecco" class="h-full object-contain mix-blend-multiply drop-shadow-xl">
+                        </div>
+                        <div class="p-8 flex flex-col flex-1">
+                            <div class="text-xs text-gold uppercase tracking-widest mb-2">Tenuta San Giorgio</div>
+                            <h3 class="font-serif text-2xl text-charcoal mb-2">Ripe in Rosa Prosecco Rosé</h3>
+                            <p class="text-sm text-charcoal-light mb-6 flex-1">Finom és kifejező rozé prosecco, Pinot Noir jelenléttel. Vadeper és vadrózsa jegyekkel.</p>
+                            <div class="flex items-center justify-between border-t border-gold/10 pt-4 mt-auto">
+                                <span class="font-serif text-xl font-medium text-gold">2 890 Ft</span>
+                                <span class="text-xs uppercase tracking-wider text-charcoal-light hover:text-gold cursor-pointer transition-colors">Részletek ›</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="product-item luxury-card bg-white rounded-2xl border border-gold/10 flex flex-col overflow-hidden" data-category="prosecco">
+                        <div class="aspect-[3/4] bg-ivory-dark relative p-6 flex items-center justify-center">
+                            <span class="absolute top-4 left-4 text-[0.6rem] uppercase tracking-widest font-bold px-3 py-1 bg-gold/10 border border-gold-soft rounded-full text-gold">Prémium</span>
+                            <img src="https://placehold.co/200x500/EFE6D8/25231F?text=Colesel+Prato" alt="Colesel Prato Scuro" class="h-full object-contain mix-blend-multiply drop-shadow-xl">
+                        </div>
+                        <div class="p-8 flex flex-col flex-1">
+                            <div class="text-xs text-gold uppercase tracking-widest mb-2">Colesel</div>
+                            <h3 class="font-serif text-2xl text-charcoal mb-2">Prato Scuro Valdobbiadene Brut</h3>
+                            <p class="text-sm text-charcoal-light mb-6 flex-1">Friss citrusok, ropogós zöldalma. Tökéletes egyensúly és frissítő lecsengés a DOCG régióból.</p>
+                            <div class="flex items-center justify-between border-t border-gold/10 pt-4 mt-auto">
+                                <span class="font-serif text-xl font-medium text-gold">4 490 Ft</span>
+                                <span class="text-xs uppercase tracking-wider text-charcoal-light hover:text-gold cursor-pointer transition-colors">Részletek ›</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 4 -->
+                    <div class="product-item luxury-card bg-white rounded-2xl border border-gold/10 flex flex-col overflow-hidden" data-category="prosecco">
+                        <div class="aspect-[3/4] bg-ivory-dark relative p-6 flex items-center justify-center">
+                            <span class="absolute top-4 left-4 text-[0.6rem] uppercase tracking-widest font-bold px-3 py-1 bg-charcoal border border-charcoal rounded-full text-gold-soft">Szuper Prémium</span>
+                            <img src="https://placehold.co/200x500/EFE6D8/25231F?text=Cartizze+69" alt="Pentagono 69 Cartizze" class="h-full object-contain mix-blend-multiply drop-shadow-xl">
+                        </div>
+                        <div class="p-8 flex flex-col flex-1">
+                            <div class="text-xs text-gold uppercase tracking-widest mb-2">Colesel</div>
+                            <h3 class="font-serif text-2xl text-charcoal mb-2">Pentagono 69 Cartizze Brut</h3>
+                            <p class="text-sm text-charcoal-light mb-6 flex-1">Kivételesen mély, elegáns ásványossággal a híres Cartizze hegyről. Páratlan élmény.</p>
+                            <div class="flex items-center justify-between border-t border-gold/10 pt-4 mt-auto">
+                                <span class="font-serif text-xl font-medium text-gold">8 290 Ft</span>
+                                <span class="text-xs uppercase tracking-wider text-charcoal-light hover:text-gold cursor-pointer transition-colors">Részletek ›</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 5 -->
+                    <div class="product-item luxury-card bg-white rounded-2xl border border-gold/10 flex flex-col overflow-hidden" data-category="habzobor">
+                        <div class="aspect-[3/4] bg-ivory-dark relative p-6 flex items-center justify-center">
+                            <span class="absolute top-4 left-4 text-[0.6rem] uppercase tracking-widest font-bold px-3 py-1 border border-charcoal/20 rounded-full text-charcoal">Sztenderd</span>
+                            <img src="https://placehold.co/200x500/EFE6D8/25231F?text=Perlanima" alt="Perlanima Cuvée" class="h-full object-contain mix-blend-multiply drop-shadow-xl">
+                        </div>
+                        <div class="p-8 flex flex-col flex-1">
+                            <div class="text-xs text-gold uppercase tracking-widest mb-2">Villa Cornaro</div>
+                            <h3 class="font-serif text-2xl text-charcoal mb-2">Perlanima Cuvée Brut Frizzante</h3>
+                            <p class="text-sm text-charcoal-light mb-6 flex-1">Lendületes tétel zöldalma, körte és citrusok finom gyümölcsös harmóniájával.</p>
+                            <div class="flex items-center justify-between border-t border-gold/10 pt-4 mt-auto">
+                                <span class="font-serif text-xl font-medium text-gold">2 590 Ft</span>
+                                <span class="text-xs uppercase tracking-wider text-charcoal-light hover:text-gold cursor-pointer transition-colors">Részletek ›</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 6 -->
+                    <div class="product-item luxury-card bg-white rounded-2xl border border-gold/10 flex flex-col overflow-hidden" data-category="bor">
+                        <div class="aspect-[3/4] bg-[#E2C9CB] relative p-6 flex items-center justify-center">
+                            <span class="absolute top-4 left-4 text-[0.6rem] uppercase tracking-widest font-bold px-3 py-1 border border-charcoal/20 rounded-full text-charcoal">Sztenderd</span>
+                            <img src="https://placehold.co/200x500/E2C9CB/25231F?text=Enigma+Merlot" alt="Enigma Merlot" class="h-full object-contain mix-blend-multiply drop-shadow-xl">
+                        </div>
+                        <div class="p-8 flex flex-col flex-1">
+                            <div class="text-xs text-gold uppercase tracking-widest mb-2">Tenuta San Giorgio</div>
+                            <h3 class="font-serif text-2xl text-charcoal mb-2">Enigma Merlot Venezia</h3>
+                            <p class="text-sm text-charcoal-light mb-6 flex-1">Mélyvörös színben pompázó, gazdag és selymes textúrájú tétel. Lágy, kerek ízek.</p>
+                            <div class="flex items-center justify-between border-t border-gold/10 pt-4 mt-auto">
+                                <span class="font-serif text-xl font-medium text-gold">3 290 Ft</span>
+                                <span class="text-xs uppercase tracking-wider text-charcoal-light hover:text-gold cursor-pointer transition-colors">Részletek ›</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="kapcsolat" class="bg-charcoal-light text-ivory pt-24 pb-12 border-t border-gold/20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 mb-20">
+                <!-- Branding -->
+                <div>
+                    <div class="font-serif text-3xl font-semibold text-white flex items-center gap-2 mb-6">
+                        <span class="w-2 h-2 rounded-full bg-gold"></span>
+                        Vino Perfetto
+                    </div>
+                    <p class="text-sm text-ivory-dark/60 leading-relaxed max-w-xs">
+                        Prémium olasz prosecco és bor nagykereskedés. Minőség a palackon túl, a legjobb dűlőkről.
+                    </p>
+                </div>
+                
+                <!-- Contact 1 -->
+                <div>
+                    <h4 class="font-serif text-2xl text-gold mb-6">Kereskedelmi képviselet</h4>
+                    <div class="space-y-4 text-sm text-ivory-dark/80">
+                        <p class="font-medium text-white text-base">Urbán Balázs</p>
+                        <p><a href="mailto:balazs.urban@vinoperfetto.hu" class="hover:text-gold transition-colors">balazs.urban@vinoperfetto.hu</a></p>
+                        <p><a href="tel:+36305316931" class="hover:text-gold transition-colors">+36 30 531 6931</a></p>
+                    </div>
+                </div>
+
+                <!-- Contact 2 -->
+                <div>
+                    <h4 class="font-serif text-2xl text-gold mb-6">Operáció & Disztribúció</h4>
+                    <div class="space-y-4 text-sm text-ivory-dark/80">
+                        <p class="font-medium text-white text-base">Kelemen Imre</p>
+                        <p><a href="mailto:imre.kelemen@vinoperfetto.hu" class="hover:text-gold transition-colors">imre.kelemen@vinoperfetto.hu</a></p>
+                        <p><a href="tel:+36206249364" class="hover:text-gold transition-colors">+36 20 624 9364</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legal Footer -->
+            <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-ivory-dark/40 uppercase tracking-widest">
+                <p>© 2026 Vino Perfetto. Minden jog fenntartva.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-gold transition-colors">ÁSZF</a>
+                    <a href="#" class="hover:text-gold transition-colors">Adatkezelés</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Age Verification Modal Logic
+            const ageModal = document.getElementById('age-modal');
+            const btnYes = document.getElementById('btn-age-yes');
+            const btnNo = document.getElementById('btn-age-no');
+
+            if (!sessionStorage.getItem('ageVerified')) {
+                document.body.classList.add('modal-open');
+            } else {
+                ageModal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+            }
+
+            btnYes.addEventListener('click', function() {
+                sessionStorage.setItem('ageVerified', 'true');
+                ageModal.style.opacity = '0';
+                setTimeout(() => {
+                    ageModal.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                }, 500); 
+            });
+
+            btnNo.addEventListener('click', function() {
+                window.location.href = "https://www.google.hu";
+            });
+
+            // 2. Mobile Menu Toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Close mobile menu on link click
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // 3. Product Catalog Filtering Logic
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const productItems = document.querySelectorAll('.product-item');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Update active state of buttons
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-charcoal', 'text-white');
+                        btn.classList.add('text-charcoal-light');
+                    });
+                    button.classList.add('active', 'bg-charcoal', 'text-white');
+                    button.classList.remove('text-charcoal-light');
+
+                    const filterValue = button.getAttribute('data-filter');
+
+                    // Filter products
+                    productItems.forEach(item => {
+                        if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                            item.style.display = 'flex';
+                            // Slight animation reset
+                            item.style.opacity = '0';
+                            item.style.transform = 'translateY(10px)';
+                            setTimeout(() => {
+                                item.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                                item.style.opacity = '1';
+                                item.style.transform = 'translateY(0)';
+                            }, 50);
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // 4. Smooth Scrolling Active State (Optional enhancement)
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active', 'text-gold');
+                    if (link.getAttribute('href').includes(current) && current !== '') {
+                        link.classList.add('active', 'text-gold');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
